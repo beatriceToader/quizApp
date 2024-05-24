@@ -108,14 +108,14 @@ function Quiz() {
     return () => {
       submitBtn.removeEventListener('click', handleSubmit)
     }
-  },[currentQuestion, score, dataLength, reversed]);
+  },[currentQuestion, score, dataLength, reversed, stressLevel]);
   
 
   return (
     <div className='quiz-container' id='quiz'>
       {showScore ? (
        <div className='quiz-header'>
-         <h2>You score is {score}. This means that you're level of stress is {stressLevel}.</h2>
+         <h2>Your score is {score}. This means that you're level of stress is {stressLevel}.</h2>
          <button onClick={() => window.location.reload()}>Reload</button>
        </div>
       ):(
