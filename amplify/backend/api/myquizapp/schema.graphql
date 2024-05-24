@@ -1,13 +1,12 @@
-type Answer @model @auth(rules: [{allow: public}]) {
+type QuestionModel @model @auth(rules: [{allow: public}]) {
   id: ID!
   text: String
-  score: Int
-  questions: [Question] @manyToMany(relationName: "QuestionAnswer")
+  a: String
+  b: String
+  c: String
+  d: String
+  e: String
+  reversed: Boolean
+  number: Int
 }
-
-type Question @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  text: String
-  scoreReversed: Boolean
-  Answers: [Answer] @manyToMany(relationName: "QuestionAnswer")
-}
+ 
