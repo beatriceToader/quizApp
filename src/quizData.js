@@ -1,68 +1,48 @@
 const quizData = [
     {
-      question: "What was the first video game ever made?",
-      options: ["Pong", "Spacewar!", "Tetris", "Computer Space"],
-      answer: "Spacewar!"
+      question: "How often have you been upset because of something that happened unexpectedly?",
+      a: "0-never",
+      b: "1-almost never",
+      c: "2-sometimes",
+      d: "3-fairly often",
+      e: "4-very often",
+      reversed: false,
     },
     {
-      question: "Which company developed the first commercial antivirus software?",
-      options: ["Symantec", "McAfee", "Norton", "Kaspersky Lab"],
-      answer: "McAfee"
+      question: "How often have you felt that you were unable to control the important things in your life?",
+      a: "0-never",
+      b: "1-almost never",
+      c: "2-sometimes",
+      d: "3-fairly often",
+      e: "4-very often",
+      reversed: false,
     },
     {
-      question: "Which animal is featured in the official PHP logo?",
-      options: ["Elephant", "Hippo", "Giraffe", "Lion"],
-      answer: "Elephant"
+      question: "How often have you felt nervous and stressed?",
+      a: "0-never",
+      b: "1-almost never",
+      c: "2-sometimes",
+      d: "3-fairly often",
+      e: "4-very often",
+      reversed: false,
     },
     {
-      question: "What does 'HTTP' stand for?",
-      options: ["HyperText Transfer Protocol", "Hyperlink Transfer Technology Protocol", "Hyperlink Text Transfer Protocol", "HyperText Technology Protocol"],
-      answer: "HyperText Transfer Protocol"
+      question: "How often have you felt confident about your ability to handle your personal problems?",
+      a: "0-never",
+      b: "1-almost never",
+      c: "2-sometimes",
+      d: "3-fairly often",
+      e: "4-very often",
+      reversed: true,
     },
     {
-      question: "Which programming language is known as the backbone of the World Wide Web?",
-      options: ["Java", "C#", "Python", "HTML"],
-      answer: "HTML"
-    },
-    {
-      question: "What is the name of the world's first computer programmer?",
-      options: ["Charles Babbage", "Ada Lovelace", "Alan Turing", "Grace Hopper"],
-      answer: "Ada Lovelace"
-    },
-    {
-      question: "In what year was the iPhone first introduced?",
-      options: ["2005", "2007", "2009", "2011"],
-      answer: "2007"
-    },
-    {
-      question: "What was Google's original name?",
-      options: ["BackRub", "Googol", "SearchMaster", "WebSearch"],
-      answer: "BackRub"
-    },
-    {
-      question: "Which of these companies was not founded in a garage?",
-      options: ["Amazon", "Google", "Apple", "Microsoft"],
-      answer: "Amazon"
-    },
-    {
-      question: "What does 'GPU' stand for?",
-      options: ["Graphical Processing Unit", "Graphics Performance Unit", "Graphics Processing Unit", "Graphical Performance Unit"],
-      answer: "Graphics Processing Unit"
-    },  
-    {
-      question: "What is the capital of France?",
-      options: ["New York", "London", "Paris", "Dublin"],
-      answer: "Paris"
-    },
-    {
-      question: "Who painted the Mona Lisa?",
-      options: ["Vincent Van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Claude Monet"],
-      answer: "Leonardo da Vinci"
-    },
-    {
-      question: "What is the largest planet in our solar system?",
-      options: ["Earth", "Jupiter", "Saturn", "Mars"],
-      answer: "Jupiter"
+      question: "How often have you felt that things were going your way?",
+      a: "0-never",
+      b: "1-almost never",
+      c: "2-sometimes",
+      d: "3-fairly often",
+      e: "4-very often",
+      reversed: true,
     }
   ];
   
