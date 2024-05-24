@@ -86,18 +86,17 @@ function Quiz() {
         else{
           setScore(prevScore => prevScore + (4 - Number(answer)))
         }
-          
-        if(score > 14){
-            setStressLevel(1)
-        }
-        if(score > 27){
-            setStressLevel(2)
-        }
       }
       const nextQuestion = currentQuestion + 1
       if(nextQuestion < dataLength){
         setCurrentQuestion(nextQuestion)
       } else {
+        if(score > 14){
+          setStressLevel(1)
+        }
+        if(score > 27){
+          setStressLevel(2)
+        }
         setShowScore(true);
       }
     }

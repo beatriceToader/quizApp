@@ -1,5 +1,5 @@
 import React from 'react';
-//import './App.css';
+import { useEffect } from 'react';
 
 // Imports the Amplify library from 'aws-amplify' package. This is used to configure your app to interact with AWS services.
 import {Amplify} from 'aws-amplify';
@@ -23,8 +23,12 @@ import Quiz from './Quiz';
 Amplify.configure(awsExports);
 //Amplify.configure(config);
 
-
 function App() {
+
+  useEffect(() => {
+    document.title = "Stress Detector Quiz";
+  }, []);
+
   return (
     <div className="App">
       <Authenticator>
