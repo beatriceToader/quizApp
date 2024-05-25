@@ -7,14 +7,14 @@ import * as mutations from './graphql/mutations'
 
 
 function Quiz() {
-  const [currentQuestion, setCurrentQuestion] = useState(1);
-  const [score, setScore] = useState(0);
-  const [showScore, setShowScore] = useState(false);
-  const [stressLevel, setStressLevel] = useState(0);
-  const [reversed, setReversed] = useState(false);
-  const [dataLength, setDataLength] = useState(0);
-  const [email, setEmail] = useState('');
-  const [first, setFirst] = useState(true);
+  const [currentQuestion, setCurrentQuestion] = useState(1);  //keeps track of the question that has to be displayed
+  const [score, setScore] = useState(0);                      //sets the score
+  const [showScore, setShowScore] = useState(false);          //it is set on true when all the quiz is finished and the score will be displayed
+  const [stressLevel, setStressLevel] = useState(0);          //the final stress level (0,1,2)
+  const [reversed, setReversed] = useState(false);            //if the question score has to be reversed
+  const [dataLength, setDataLength] = useState(0);            //the number of question from the quiz
+  const [email, setEmail] = useState('');                     //the email of the current user
+  const [first, setFirst] = useState(true);                   //if we are on the first question of the quiz
 
   useEffect(() =>{
     const quiz = document.getElementById('quiz')
@@ -31,6 +31,7 @@ function Quiz() {
       return;
     }
 
+    //the function retrieves the email of the authenticated user
     async function getEmailFromUser() {
       try {
         const userAttributes = await fetchUserAttributes()
@@ -43,13 +44,14 @@ function Quiz() {
 
     getEmailFromUser()
 
+    //the function loads the quiz with the current question
     async function loadQuiz(){
       setFirst(false)
       deselectAnswers()
 
       const client = generateClient();
 
-      const questionNumber = Number(currentQuestion); // Define the question number you want to retrieve
+      const questionNumber = Number(currentQuestion);
 
       const result = await client.graphql({
         query: listQuestionModels,
@@ -73,11 +75,13 @@ function Quiz() {
       setReversed(currentQuizData?.reversed)
       setDataLength(11)
     }
-  
-    function deselectAnswers(){
+    
+    //deselect the question that was selected in the previous answer
+    function deselectAnswers(){                               
       answerEls.forEach(answerEl => answerEl.checked = false)
     }
-  
+    
+    //retrieves the answer that was chosen
     function getSelected(){
       let answer
       answerEls.forEach(answerEl => {
@@ -88,6 +92,7 @@ function Quiz() {
       return answer
     }
 
+    //adds the score of the current answer to the final score and sets the next question or sets the variable to print the score
     function handleSubmit(){
       const answer = getSelected()
       if (answer){
@@ -98,13 +103,13 @@ function Quiz() {
           setScore(score + (4 - Number(answer)))
         }
         console.log(`the intermediate score is ${score} at the question ${currentQuestion}`)
-      }
-      const nextQuestion = currentQuestion + 1
-      if(nextQuestion < dataLength){
-        setCurrentQuestion(nextQuestion)
-      } 
-      else {
-        setShowScore(true);
+        const nextQuestion = currentQuestion + 1
+        if(nextQuestion < dataLength){
+          setCurrentQuestion(nextQuestion)
+        } 
+        else {
+          setShowScore(true);
+        }
       }
     }
 
@@ -117,6 +122,7 @@ function Quiz() {
     }
   },[currentQuestion, score, dataLength, reversed, stressLevel, email, first]);
 
+  //handle the last step, when the score is shown and the data will be saved in the database
   useEffect(() => {
     if(showScore) {
 
@@ -129,7 +135,8 @@ function Quiz() {
       }
 
       const finishBtn = document.getElementById('finish');
-
+      
+      //saves the stess level in the database and reloads the page
       async function handleFinish(){
         const currentDateTime = new Date().toISOString();
         console.log(`handleFinish called at: ${currentDateTime}`)
