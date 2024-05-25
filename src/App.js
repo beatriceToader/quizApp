@@ -41,10 +41,11 @@ function App() {
               <button 
                 onClick={signOut} 
                 style={{ 
-                  margin: '20px', 
+                  margin: '-1px', 
                   fontSize: '0.8rem', 
-                  padding: '5px 10px', 
-                  marginTop: '20px'
+                  padding: '5px 10px',
+                  borderRadius: '10px', 
+                  marginTop: '25px',
                 }}
               >
                 Sign Out
