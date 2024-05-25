@@ -1,3 +1,10 @@
+type Score @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  email: AWSEmail
+  score: Int
+  time: AWSDateTime
+}
+
 type QuestionModel @model @auth(rules: [{allow: public}]) {
   id: ID!
   text: String

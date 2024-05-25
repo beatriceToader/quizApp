@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import './Quiz.css';
+import React, { useEffect, useState } from 'react'
+import './Quiz.css'
 import { listQuestionModels }from './graphql/queries'
 import { generateClient } from '@aws-amplify/api'
+import { fetchUserAttributes } from 'aws-amplify/auth'
+import * as mutations from './graphql/mutations'
 
 
 function Quiz() {
@@ -11,7 +13,8 @@ function Quiz() {
   const [stressLevel, setStressLevel] = useState(0);
   const [reversed, setReversed] = useState(false);
   const [dataLength, setDataLength] = useState(0);
-
+  const [email, setEmail] = useState('');
+  const [first, setFirst] = useState(true);
 
   useEffect(() =>{
     const quiz = document.getElementById('quiz')
@@ -28,12 +31,24 @@ function Quiz() {
       return;
     }
 
+    async function getEmailFromUser() {
+      try {
+        const userAttributes = await fetchUserAttributes()
+        setEmail(userAttributes?.email)
+        console.log(email)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    getEmailFromUser()
+
     async function loadQuiz(){
+      setFirst(false)
       deselectAnswers()
 
       const client = generateClient();
 
-      console.log(currentQuestion)
       const questionNumber = Number(currentQuestion); // Define the question number you want to retrieve
 
       const result = await client.graphql({
@@ -47,10 +62,7 @@ function Quiz() {
         }
       });
       
-      const currentQuizData = result.data.listQuestionModels.items[0]; // Assuming there's only one question with the number 7
-      console.log(currentQuizData);
-
-      //const currentQuizData = quizData[currentQuestion]
+      const currentQuizData = result.data.listQuestionModels.items[0];
   
       questionEl.innerText = currentQuizData?.text
       a_text.innerText = currentQuizData?.a
@@ -59,7 +71,7 @@ function Quiz() {
       d_text.innerText = currentQuizData?.d
       e_text.innerText = currentQuizData?.e
       setReversed(currentQuizData?.reversed)
-      setDataLength(10)
+      setDataLength(11)
     }
   
     function deselectAnswers(){
@@ -73,7 +85,6 @@ function Quiz() {
           answer = answerEl.id
         }
       })
-      console.log("Id is "+ answer)
       return answer
     }
 
@@ -81,33 +92,78 @@ function Quiz() {
       const answer = getSelected()
       if (answer){
         if(reversed === false){
-          setScore(prevScore => prevScore + Number(answer))
+          setScore(score + Number(answer))
         }
         else{
-          setScore(prevScore => prevScore + (4 - Number(answer)))
+          setScore(score + (4 - Number(answer)))
         }
+        console.log(`the intermediate score is ${score} at the question ${currentQuestion}`)
       }
       const nextQuestion = currentQuestion + 1
       if(nextQuestion < dataLength){
         setCurrentQuestion(nextQuestion)
-      } else {
-        if(score > 14){
-          setStressLevel(1)
-        }
-        if(score > 27){
-          setStressLevel(2)
-        }
+      } 
+      else {
         setShowScore(true);
       }
     }
 
     submitBtn.addEventListener('click',handleSubmit)
-    loadQuiz()
+    if(getSelected() || first)
+      loadQuiz()
 
     return () => {
       submitBtn.removeEventListener('click', handleSubmit)
     }
-  },[currentQuestion, score, dataLength, reversed, stressLevel]);
+  },[currentQuestion, score, dataLength, reversed, stressLevel, email, first]);
+
+  useEffect(() => {
+    if(showScore) {
+
+      console.log(`score ${score}`)
+      if(score > 14){
+        setStressLevel(1)
+      }
+      if(score > 27){
+        setStressLevel(2)
+      }
+
+      const finishBtn = document.getElementById('finish');
+
+      async function handleFinish(){
+        const currentDateTime = new Date().toISOString();
+        console.log(`handleFinish called at: ${currentDateTime}`)
+        console.log(`the email of the user at: ${email}`)
+        console.log(`the stress level of the quiz is: ${stressLevel}`)
+
+        const client = generateClient()
+        const scoreDetails = {
+          email: email,
+          score: stressLevel,
+          time: currentDateTime
+        }
+        const newScore = await client.graphql({
+          query: mutations.createScore,
+          variables: {input: scoreDetails}
+        })
+
+        if(newScore){
+          window.location.reload()
+        }
+        
+      }
+
+      if (finishBtn) {
+        finishBtn.addEventListener('click', handleFinish)
+      }
+
+      return () => {
+        if(finishBtn) {
+          finishBtn.removeEventListener('click',handleFinish)
+        }
+      }
+    }
+  }, [showScore, email, stressLevel, score])
   
 
   return (
@@ -115,7 +171,7 @@ function Quiz() {
       {showScore ? (
        <div className='quiz-header'>
          <h2>Your score is {score}. This means that you're level of stress is {stressLevel}.</h2>
-         <button onClick={() => window.location.reload()}>Reload</button>
+         <button id='finish'>Finish & Reload</button>
        </div>
       ):(
         <div className='quiz-header'>
