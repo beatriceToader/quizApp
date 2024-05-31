@@ -59,3 +59,37 @@ button:focus{
     outline: none;
     background-color: #44b927;
 }
+.progress-bar-container {
+    width: 100%;
+    background-color: #f3f3f3;
+    border-radius: 25px;
+    overflow: hidden;
+    margin: 20px 0;
+    position: relative;
+}
+.progress-bar {
+    height: 30px;
+    border-radius: 25px;
+    transition: width 0.3s ease;
+}
+.stress-level-0 {
+    width: 33%;
+    background-color: green;
+}
+.stress-level-1 {
+    width: 66%;
+    background-color: yellow;
+}
+.stress-level-2 {
+    width: 100%;
+    background-color: red;
+}
+.progress-label {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 0;
+    line-height: 30px;
+    font-weight: bold;
+    color: #000;
+}

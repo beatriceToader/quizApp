@@ -134,6 +134,25 @@ function Quiz() {
         setStressLevel(2)
       }
 
+      function updateStressLevel(newLevel) {
+        const progressBar = document.querySelector('.progress-bar');
+        const progressLabel = document.querySelector('.progress-label');
+        
+        progressBar.className = 'progress-bar'; // Reset classes
+        
+        if (newLevel === 0) {
+            progressBar.classList.add('stress-level-0');
+            progressLabel.textContent = 'No Stress';
+        } else if (newLevel === 1) {
+            progressBar.classList.add('stress-level-1');
+            progressLabel.textContent = 'Low Stress';
+        } else if (newLevel === 2) {
+            progressBar.classList.add('stress-level-2');
+            progressLabel.textContent = 'High Stress';
+        }
+      }
+      updateStressLevel(stressLevel);
+
       const finishBtn = document.getElementById('finish');
       
       //saves the stess level in the database and reloads the page
@@ -177,7 +196,11 @@ function Quiz() {
     <div className='quiz-container' id='quiz'>
       {showScore ? (
        <div className='quiz-header'>
-         <h2>Your score is {score}. This means that you're level of stress is {stressLevel}.</h2>
+         <h2>Your score is {score}. This means that you're level of stress is {stressLevel}/2.</h2>
+         <div class="progress-bar-container">
+            <div class="progress-bar stress-level-1"></div>
+            <div class="progress-label">Low Stress</div>
+         </div>
          <button id='finish'>Finish & Reload</button>
        </div>
       ):(
