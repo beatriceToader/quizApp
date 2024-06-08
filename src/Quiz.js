@@ -4,9 +4,12 @@ import { listQuestionModels }from './graphql/queries'
 import { generateClient } from '@aws-amplify/api'
 import { fetchUserAttributes } from 'aws-amplify/auth'
 import * as mutations from './graphql/mutations'
+import { useNavigate } from 'react-router-dom';
 
 
-function Quiz() {
+function Quiz({ resetQuizFlag, setResetQuizFlag }) {
+  const navigate = useNavigate();
+
   const [currentQuestion, setCurrentQuestion] = useState(1);  //keeps track of the question that has to be displayed
   const [score, setScore] = useState(0);                      //sets the score
   const [showScore, setShowScore] = useState(false);          //it is set on true when all the quiz is finished and the score will be displayed
@@ -15,6 +18,26 @@ function Quiz() {
   const [dataLength, setDataLength] = useState(0);            //the number of question from the quiz
   const [email, setEmail] = useState('');                     //the email of the current user
   const [first, setFirst] = useState(true);                   //if we are on the first question of the quiz
+
+  const resetQuiz = () => {
+    console.log("here");
+    setCurrentQuestion(1);
+    setScore(0);
+    setShowScore(false);
+    setStressLevel(0);
+    setReversed(false);
+    setDataLength(0);
+    setEmail('');
+    setFirst(true);
+  };
+
+  useEffect(() => {
+    if (resetQuizFlag) {
+      resetQuiz();
+      setResetQuizFlag(false);
+      navigate('/');
+    }
+  }, [resetQuizFlag, setResetQuizFlag, navigate]);
 
   useEffect(() =>{
     const quiz = document.getElementById('quiz')
@@ -134,11 +157,11 @@ function Quiz() {
         setStressLevel(2)
       }
 
-      function updateStressLevel(newLevel) {
+      function updateStressLevel(newLevel) {  //function to update the progress bar
         const progressBar = document.querySelector('.progress-bar');
         const progressLabel = document.querySelector('.progress-label');
         
-        progressBar.className = 'progress-bar'; // Reset classes
+        progressBar.className = 'progress-bar'; 
         
         if (newLevel === 0) {
             progressBar.classList.add('stress-level-0');
@@ -174,7 +197,7 @@ function Quiz() {
         })
 
         if(newScore){
-          window.location.reload()
+          navigate('/results');
         }
         
       }
@@ -189,7 +212,7 @@ function Quiz() {
         }
       }
     }
-  }, [showScore, email, stressLevel, score])
+  }, [showScore, email, stressLevel, score, navigate])
   
 
   return (
@@ -197,11 +220,11 @@ function Quiz() {
       {showScore ? (
        <div className='quiz-header'>
          <h2>Your score is {score}. This means that you're level of stress is {stressLevel}/2.</h2>
-         <div class="progress-bar-container">
-            <div class="progress-bar stress-level-1"></div>
-            <div class="progress-label">Low Stress</div>
+         <div className="progress-bar-container">
+            <div className="progress-bar stress-level-1"></div>
+            <div className="progress-label">Low Stress</div>
          </div>
-         <button id='finish'>Finish & Reload</button>
+         <button id='finish'>Submit your score</button>
        </div>
       ):(
         <div className='quiz-header'>
