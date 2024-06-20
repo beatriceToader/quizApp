@@ -3,7 +3,17 @@ import {useState, useEffect} from 'react'
 import { listScores }from './graphql/queries'
 import { generateClient } from '@aws-amplify/api'
 import { fetchUserAttributes } from 'aws-amplify/auth'
-import './Results.css'
+import {Bar} from 'react-chartjs-2'
+import {Chart as ChartJS, CategoryScale, LinearScale, Title, Tooltip, Legend, BarElement} from 'chart.js'
+
+ChartJS.register(
+    CategoryScale, 
+    LinearScale, 
+    BarElement, 
+    Title, 
+    Tooltip, 
+    Legend
+);
 
 
 function Results() {
@@ -29,17 +39,29 @@ function Results() {
         async function getUserScores() {
             if(email){
                 const client = generateClient();
-                const result = await client.graphql({
-                    query : listScores,
-                    variables : {
-                        filter : {
-                            email: {eq:email},
-                        },
-                    }
-                })
+                let allScores = [];
+                let nextToken = null;
 
-                setUserScores(result.data.listScores.items)
+                do {
+                    const result = await client.graphql({
+                        query: listScores,
+                        variables: {
+                            filter: {
+                                email: { eq: email },
+                            },
+                            limit: 7,
+                            sortDirection: 'DESC',
+                            nextToken: nextToken,
+                        }
+                    });
 
+                    allScores = allScores.concat(result.data.listScores.items);
+                    nextToken = result.data.listScores.nextToken;
+                } while (allScores.length < 7 && nextToken);
+
+                const last7Scores = allScores.slice(-7);
+
+                setUserScores(last7Scores);
             }
         }
         getUserScores()
@@ -50,29 +72,55 @@ function Results() {
         return new Date(date).toLocaleString(undefined, options);
     };
 
+    const formattedDates = userScores.map(score => printDate(score.time));
+    const scoresData = userScores.map(score => score.score);
+    console.log(scoresData)
+
+    const options = {
+        scales: {
+            y: {
+                ticks: {
+                    stepSize: 1,
+                    callback: function(value, index, values) {
+                        if ([0, 1, 2].includes(value)) {
+                            return value;
+                        } else {
+                            return '';
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    const barData = {
+        labels: formattedDates,
+        datasets: [
+            {
+                label: 'Previous Scores', 
+                data: scoresData,
+                backgroundColor: scoresData.map(score => {
+                    if (score === 0) {
+                        return 'rgba(37, 255, 0, 0.8)'
+                    } else if (score === 1) {
+                        return 'rgba(255, 250, 0, 0.8)'
+                    } else if (score === 2) {
+                        return 'rgba(255, 0, 0, 0.8)'
+                    } else {
+                        return 'rgba(54, 162, 235, 0.2)' 
+                    }
+                }),
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+            }
+        ]
+    }
+
     return (
         <div>
-            <h2>Previous Scores</h2>
-            <div style={{ maxHeight: '606px', overflowY: 'auto' }}>
+            <div>
             {userScores.length > 0 ? (
-                <table style={{ borderCollapse: 'collapse', width: '100%'}}>
-                    <thead>
-                        <tr>
-                            <th style={{ border: '1px solid black', padding: '8px' }}>Email</th>
-                            <th style={{ border: '1px solid black', padding: '8px' }}>Score</th>
-                            <th style={{ border: '1px solid black', padding: '8px' }}>Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {userScores.map((score) => (
-                            <tr key={score.id}>
-                                <td style={{ border: '1px solid black', padding: '8px' }}>{score.email}</td>
-                                <td style={{ border: '1px solid black', padding: '10px' }}>{score.score}</td>
-                                <td style={{ border: '1px solid black', padding: '8px' }}>{printDate(score.time)}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <Bar options={options} data={barData} style={{ height: '400px', width: '600px' }}/>
             ):(
                 <p>Loading...</p>
             )}

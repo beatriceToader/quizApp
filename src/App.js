@@ -14,7 +14,7 @@ function App() {
   const [resetQuizFlag, setResetQuizFlag] = useState(false);
 
   useEffect(() => {
-    document.title = "Stress Detector Quiz";
+    document.title = "StressScore Quiz";
   });
 
   const handleSignOut = (signOut) => {
